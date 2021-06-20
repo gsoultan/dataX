@@ -21,7 +21,12 @@ func (d *database) GetConnection() (interface{}, error) {
 	if d.db != nil {
 		return d.db, nil
 	}
-	return sqlx.Connect(d.driverName, d.GetUri())
+
+	var err error
+	if d.db, err = sqlx.Connect(d.driverName, d.GetUri()); err != nil {
+		return nil, err
+	}
+	return d.db, nil
 }
 
 func (d *database) GetDatabaseName() string {
@@ -32,20 +37,22 @@ func (d *database) GetUri() string {
 	return d.uri
 }
 
-func (d *database) PrepareStatement(query string) (*sqlx.Stmt, error) {
-	return d.db.Preparex(query)
+func connect(driverName string, uri string) (*sqlx.DB, error) {
+	return sqlx.Connect(driverName, uri)
 }
 
-func (d *database) PrepareNameStatement(query string) (*sqlx.NamedStmt, error) {
-	return d.db.PrepareNamed(query)
-}
+func New(driverName string, cfg dataX.Config) (dataX.Database, error) {
+	var err error
 
-func New(driverName string, cfg dataX.Config) dataX.Database {
 	d := &database{}
 	d.databaseName = cfg.Database
 
 	d.uri = createUri(driverName, cfg)
-	return d
+	if d.db, err = connect(driverName, d.GetUri()); err != nil {
+		return nil, err
+	}
+
+	return d, nil
 }
 
 func createUri(driverName string, cfg dataX.Config) string {

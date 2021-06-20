@@ -7,7 +7,7 @@ import (
 )
 
 type transactionManager struct {
-	db *sqlx.DB
+	db dataX.Database
 	tx *sqlx.Tx
 }
 
@@ -17,7 +17,13 @@ func (s *transactionManager) GetTransaction() interface{} {
 
 func (s *transactionManager) Begin(ctx context.Context) error {
 	var err error
-	s.tx, err = s.db.BeginTxx(ctx, nil)
+	var db interface{}
+
+	if db, err = s.db.GetConnection(); err != nil {
+		return err
+	}
+
+	s.tx, err = db.(*sqlx.DB).BeginTxx(ctx, nil)
 	return err
 }
 
@@ -29,7 +35,7 @@ func (s *transactionManager) Rollback() error {
 	return s.Rollback()
 }
 
-func NewTransactionManager(db *sqlx.DB) dataX.TransactionManager {
+func NewTransactionManager(db dataX.Database) dataX.TransactionManager {
 	u := &transactionManager{}
 	u.db = db
 	return u

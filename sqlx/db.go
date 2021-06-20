@@ -32,6 +32,14 @@ func (d *database) GetUri() string {
 	return d.uri
 }
 
+func (d *database) PrepareStatement(query string) (*sqlx.Stmt, error) {
+	return d.db.Preparex(query)
+}
+
+func (d *database) PrepareNameStatement(query string) (*sqlx.NamedStmt, error) {
+	return d.db.PrepareNamed(query)
+}
+
 func New(driverName string, cfg dataX.Config) dataX.Database {
 	d := &database{}
 	d.databaseName = cfg.Database

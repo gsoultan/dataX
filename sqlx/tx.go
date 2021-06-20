@@ -28,11 +28,11 @@ func (s *transactionManager) Begin(ctx context.Context) error {
 }
 
 func (s *transactionManager) Commit() error {
-	return s.Commit()
+	return s.tx.Commit()
 }
 
 func (s *transactionManager) Rollback() error {
-	return s.Rollback()
+	return s.tx.Rollback()
 }
 
 func NewTransactionManager(db dataX.Database) dataX.TransactionManager {

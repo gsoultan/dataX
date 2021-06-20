@@ -2,7 +2,7 @@ package sqlx
 
 import (
 	"context"
-	"github.com/gsoultan/transX"
+	"github.com/gsoultan/dataX"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -29,7 +29,7 @@ func (s *transactionManager) Rollback() error {
 	return s.Rollback()
 }
 
-func NewTransactionManager(db *sqlx.DB) transX.TransactionManager {
+func NewTransactionManager(db *sqlx.DB) dataX.TransactionManager {
 	u := &transactionManager{}
 	u.db = db
 	return u

@@ -9,12 +9,12 @@ import (
 )
 
 type mysqlBuilder struct {
-	config dataX.Config
+	config *dataX.Config
 	ctx    context.Context
 }
 
 // WithConfig returns a copy with the given dataX.Config config
-func (b *mysqlBuilder) WithConfig(config dataX.Config) builder.Database {
+func (b *mysqlBuilder) WithConfig(config *dataX.Config) builder.Database {
 	b.config = config
 	return b
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type mongodbBuilder struct {
-	config  dataX.Config
+	config  *dataX.Config
 	context context.Context
 }
 
@@ -28,7 +28,7 @@ func (b *mongodbBuilder) Build() dataX.Database {
 }
 
 // WithConfig returns a copy with the given dataX.Config config
-func (b *mongodbBuilder) WithConfig(config dataX.Config) builder.Database {
+func (b *mongodbBuilder) WithConfig(config *dataX.Config) builder.Database {
 	b.config = config
 	return b
 }

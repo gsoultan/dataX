@@ -19,7 +19,6 @@ type config struct {
 	userName string
 	password string
 	database string
-	build    *dataX.Config
 }
 
 // WithPort returns a copy with the given int port
@@ -30,7 +29,7 @@ func (c *config) WithPort(port int) Config {
 
 // GetBuild returns the *dataX.Config build
 func (c *config) Build() *dataX.Config {
-	return c.build
+	return &dataX.Config{}
 }
 
 // WithProvider returns a copy with the given string provider

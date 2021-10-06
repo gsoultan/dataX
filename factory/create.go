@@ -3,8 +3,8 @@ package factory
 import (
 	"context"
 
-	"github.com/gsoultan/builder"
 	"github.com/gsoultan/dataX"
+	"github.com/gsoultan/dataX/builder"
 	"github.com/gsoultan/dataX/flags"
 	"github.com/gsoultan/dataX/mongodb"
 	"github.com/gsoultan/dataX/mysql"

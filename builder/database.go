@@ -8,6 +8,6 @@ import (
 
 type Database interface {
 	Build() dataX.Database
-	WithConfig(config dataX.Config) Database
+	WithConfig(config *dataX.Config) Database
 	WithContext(ctx context.Context) Database
 }

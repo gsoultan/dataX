@@ -3,24 +3,47 @@ package mongodb
 import (
 	"context"
 	"fmt"
-	"github.com/gsoultan/dataX"
+	"sync"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var once sync.Once
+var client *mongo.Client
+
 type database struct {
 	databaseName string
 	uri          string
-	client       *mongo.Client
 	ctx          context.Context
 }
 
 func (d *database) Ping() error {
-	return d.client.Ping(d.ctx, nil)
+	return client.Ping(d.ctx, nil)
 }
 
-func (d *database) GetConnection() (interface{}, error) {
-	return d.client, nil
+func (d *database) GetConnection() interface{} {
+	if client != nil {
+		return client
+	}
+
+	clientOptions := options.Client().ApplyURI(d.uri)
+
+	var err error
+	var cl *mongo.Client
+	if cl, err = mongo.NewClient(clientOptions); err != nil {
+		fmt.Println("mongo", "initiation", "err", err)
+		return nil
+	}
+	if err = client.Connect(d.ctx); err != nil {
+		fmt.Println("mongo", "connecting", "err", err)
+		return nil
+	}
+
+	once.Do(func() {
+		client = cl
+	})
+	return client
 }
 
 func (d *database) GetDatabaseName() string {
@@ -29,25 +52,4 @@ func (d *database) GetDatabaseName() string {
 
 func (d *database) GetUri() string {
 	return d.uri
-}
-
-func New(ctx context.Context, cfg dataX.Config) (dataX.Database, error) {
-	u := &database{}
-	u.databaseName = cfg.Database
-	u.ctx = ctx
-	u.uri = fmt.Sprintf("mongodb://%s:%s@%s:%s/%s", cfg.UserName, cfg.Password, cfg.Host, cfg.Port, cfg.Database)
-	clientOptions := options.Client().ApplyURI(u.GetUri())
-
-	var err error
-	if u.client, err = mongo.NewClient(clientOptions); err != nil {
-		return nil, err
-	}
-	if err = u.client.Connect(ctx); err != nil {
-		return nil, err
-	}
-	if err = u.client.Ping(ctx, nil); err != nil {
-		return nil, err
-	}
-
-	return u, nil
 }
